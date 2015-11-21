@@ -1,2 +1,2 @@
-# Feedforward-Network-Estimates
-MATLAB code to find estimates for a Feed Foward Network
+# Group Project for StatComp
+R code for the two-sample test procedures
