@@ -87,7 +87,6 @@ permTestBoot <- function(A,B,NUM=999,stat = "simple"){
     if(NCOL(A)>1){stop("Too many Dims for ks.test")}
     boot.obj <- boot(data = z, statistic = kolSmirStat,
                  sim = "permutation", R = NUM , sizes = N)
-    print("two")
   }else if (stat == "simple"){
     if(NCOL(A)>1){stop("Too many Dims for simple test")}
     boot.obj <- boot(data = z, statistic = simpleStat,
