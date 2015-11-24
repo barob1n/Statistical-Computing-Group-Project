@@ -14,7 +14,8 @@
 #              MMD - MMD
 #              en - energy statistics
 #              ts - ts.test
-#              ??
+#              hotel - hotelling test
+#
 ################################################################################
 
 
@@ -23,7 +24,12 @@ check<-library("FNN",logical.return=T,quietly=T,verbose=F)
 if(check=="FALSE"){
   install.packages("FNN")
 }
-library("FNN")
+library("Hotelling")
+check<-library("Hotelling",logical.return=T,quietly=T,verbose=F)
+if(check=="FALSE"){
+  install.packages("Hotelling")
+}
+library("Hotelling")
 
 #basic statistic - could be replaced with ts.test 
 simpleStat <- function(z,idx,sizes){
@@ -58,6 +64,14 @@ Tn3 <- function(z, ix, sizes) {
   return((i1 + i2) / (3 * n))
 }
 
+#hotel stat
+hotel <- function(z,idx,sizes){
+  z<-z[idx,]
+  x<-z[1:sizes[1],]
+  y<-z[sizes[1]+1:sizes[2],]
+  return(hotelling.stat(x,y, shrinkage = FALSE)$statistic)
+}
+
 #Function to create permutations using boot and call statistic functions above
 permTestBoot <- function(A,B,NUM=999,stat = "simple"){
   N=c(NROW(A),NROW(B))
@@ -82,6 +96,9 @@ permTestBoot <- function(A,B,NUM=999,stat = "simple"){
     #call to kernal function goes here
   }else if(stat == "nn"){
     boot.obj <- boot(data = z, statistic = Tn3,
+                     sim = "permutation", R = NUM, sizes = N)
+  }else if (stat =="hotel"){
+    boot.obj <- boot(data = z, statistic = hotel,
                      sim = "permutation", R = NUM, sizes = N)
   }
   return(boot.obj)
