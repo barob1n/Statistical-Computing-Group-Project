@@ -4,6 +4,7 @@
 
 library(MASS)
 
+#dist to use.
 Sigma <- matrix(c(1,0,0,1),2,2) #same covariance matrix
 A <- mvrnorm(250,c(2,2),Sigma)    # different means
 B <- mvrnorm(250,c(-2,-2),Sigma)
