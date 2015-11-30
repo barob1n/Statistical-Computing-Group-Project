@@ -14,8 +14,9 @@
 
 #compute the radial basis function kernel for two vecs
 rbfk <- function(a,b, sigma = 1){
-  abInner <- a %*% b; #the inner product of a and b
-  result <- exp(-1*abInner/(2*sigma))
+  Diff <- a - b
+  abDiffNorm <- Diff %*% Diff; #the inner product of a and b
+  result <- exp(-1*abDiffNorm/(2*sigma))
 }
 
 #given the two samples X and Y, define the matrix P of the kernel on pairs
