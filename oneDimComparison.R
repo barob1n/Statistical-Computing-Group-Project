@@ -9,14 +9,21 @@
 
 
 #################################################################################################################
-#                             !!!   Parameter set up for tests    !!!
-m <- 50
-n <- 50
+#                               !!!   Parameter set up for tests    !!!
+#samples<-c(5,10,15,20,30,40,70,100)
+samples<-50
+for(p in 1:length(samples) ){
+# m <- 10 
+# n <- 10
+  m<-samples[p]
+  n<-samples[p]
+
+
 R<-999
 
 #perform this many iterations per delta increment. Used to compute percent pass/fail
 #Example: thismany<-100, say 50 correctly identify different distributions, then 50/100 = 50 percent pass
-thismany<-10
+thismany<-20
 
 #amount to increment for tests. Ex.: delta =.1 then test means 0,0.1,0.2,...
 delta<-.1
@@ -39,11 +46,15 @@ steps_var<-is.integer((max_var-min_var)/delta)
 mu_p_data_ks<-numeric(thismany)
 mu_p_data_simp<-numeric(thismany)
 mu_p_data_nn<-numeric(thismany)
+mu_p_data_edist<-numeric(thismany)
+mu_p_data_mmd<-numeric(thismany)
 
 #percent that registered correct when means was varied
 percent_mu_ks<-numeric(length(steps_mu))
 percent_mu_simp<-numeric(length(steps_mu))
 percent_mu_nn<-numeric(length(steps_mu))
+percent_mu_edist<-numeric(length(steps_mu))
+percent_mu_mmd<-numeric(length(steps_mu))
 
 #Std normal - this distribution does not change, it is the base case
 A<-rnorm(n,min_mu,min_var)
@@ -72,21 +83,37 @@ for(i in 1:length(steps_mu)){
     #Get data for near neighbor stat
     data<-permTestBR(A,B,R,stat=nNeighbor,k=3)
     mu_p_data_nn[j]<-mean(data>=data[1])
+    
+    #Get data for edist stat
+    data<-permTestBR(A,B,R,stat=edist)
+    mu_p_data_edist[j]<-mean(data>=data[1])
+    
+    #Get data for MMD Radial stat
+    #data<-permTestBR(A,B,R,stat=kernelStat)
+    #mu_p_data_mmd[j]<-mean(data>=data[1])
+    
   }
   percent_mu_ks[i]<-(sum(mu_p_data_ks<=alpha))/(thismany)*100
   percent_mu_simp[i]<-(sum(mu_p_data_simp<=alpha))/(thismany)*100
   percent_mu_nn[i]<-(sum(mu_p_data_nn<=alpha))/(thismany)*100
+  percent_mu_edist[i]<-(sum(mu_p_data_edist<=alpha))/(thismany)*100
+ #percent_mu_mmd[i]<-(sum(mu_p_data_mmd<=alpha))/(thismany)*100
+  
   
 }
 #percent_mu_ks
 
 #example of what ouput will look like
-df<-data.frame(steps_mu,percent_mu_ks,percent_mu_simp,percent_mu_nn)
-ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
-  geom_line(aes(y = percent_mu_ks, col = "percent_mu_ks")) + 
-  geom_line(aes(y = percent_mu_simp, col = "percent_mu_simp")) +
-  geom_line(aes(y = percent_mu_nn, col = "percent_mu_nn"))
-
+df<-data.frame(steps_mu,percent_mu_ks,percent_mu_simp,percent_mu_nn, percent_mu_mmd)
+ ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
+   geom_line(aes(y = percent_mu_ks, col = "percent_mu_ks")) + 
+   geom_line(aes(y = percent_mu_simp, col = "percent_mu_simp")) +
+   geom_line(aes(y = percent_mu_nn, col = "percent_mu_nn")) +
+   geom_line(aes( y = percent_mu_edist,col = "percent_mu_edist")) +
+   #geom_line(aes( y = percent_mu_mmd,col = "percent_mu_mmd")) +
+   ggtitle("50 variables")
 
 # Stop the clock
 proc.time() - ptm
+
+}
