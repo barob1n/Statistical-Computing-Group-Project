@@ -81,6 +81,17 @@ uMMDDecision <- function(X,Y,m,R){
   options(warn = 0)
   
   print(p)
+<<<<<<< HEAD
+  
+  if(p < .05){
+    print("Rejected")
+  }
+
+  if(p > .95){
+    print("Rejected")
+  }
+  pval <- p
+=======
 
   pval <- p
 #   print(p)
@@ -92,6 +103,7 @@ uMMDDecision <- function(X,Y,m,R){
 #   if(p > .95){
 #     print("Rejected")
 #   }
+>>>>>>> myMacBranch
 }
 
 

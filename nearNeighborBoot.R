@@ -1,5 +1,5 @@
 ################################################################################
-#NearNeighbor: perfroms two sample test via nearest-neighbor method
+#NearNeighbor: performs two sample test via nearest-neighbor method
 #
 #Note: Will need the following packages installed and loaded:
 #      install.packages("FNN")
