@@ -5,8 +5,8 @@
 library(MASS)
 source('permTestStats.R')  #include the file which contains the function definitions for the statistics
 
-m <- 100
-n <- 100
+m <- 5
+n <- 5
 
 different <- 1
 mu1 <- c(2,2,2)
@@ -24,7 +24,7 @@ B <- mvrnorm(n,mu2,Sigma)
 
 #choose the statistic
 permStat <- function(x,y){
-  kolSmirStat(x,y)
+  kernalstat(x,y)
 }
 #Kolmogorov-Smirnov test is just a permutation with the statistic that 
 #looks at the max of the difference of the ecdfs

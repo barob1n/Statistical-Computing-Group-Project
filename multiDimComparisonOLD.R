@@ -80,6 +80,7 @@ for(i in 1:length(steps_mu)){
   
   for(j in 1:thismany){
     #B<-matrix(rnorm(200,steps_mu[i],1),40,5)
+    
     B <- mvrnorm(50,c(0,steps_mu[i]),Sigma)
     
     #Get data for near neighbor stat

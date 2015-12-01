@@ -59,12 +59,16 @@ nNeighbor <- function(x,y,k=3) {
   #  z <- rbind(x, y)
  # }
   z <- rbind(as.matrix(x),as.matrix(y))
-  NN <- get.knn(z, k=3)
+  #o <- rep(0, NROW(z))
+ # z <- as.data.frame(cbind(z, o))
+  
+  NN <- get.knn(z, k)
   block1 <- NN$nn.index[1:n1, ]
   block2 <- NN$nn.index[(n1+1):n, ]
   i1 <- sum(block1 < n1 + .5)
   i2 <- sum(block2 > n1 + .5)
-  statistic<-(i1 + i2) / (k * n)
+  statistic<-((i1 + i2) / (k * n))
+  #print(k)
   return(as.data.frame(statistic))
 }
 
@@ -106,7 +110,9 @@ rbfk <- function(x,y,sigma=1,m,n){
   
   H = xInnerM + yInnerM - 2*xyInnerM;
   #This gives us the mxn matrix whose (i,j) entry is k(x_i,y_j)
-  H = exp(-H/(2*sigma));
+ 
+  H= exp(-H/(2*sigma));
+  return(H) 
 }
 
 #rbfk(A,B,sigma, m,n)

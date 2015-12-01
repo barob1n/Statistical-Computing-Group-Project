@@ -1,8 +1,8 @@
 ################################################################################
-#permTestBoot.R: permBootTest(A,B,NUM=999,stat="simple")
+#permTestSamp.R: permBootSamp(A,B,NUM=999,stat="simple")
 #  
 #Description: performs permutation test for various statistics using the 
-#             boot function to perform permutations. 
+#             sample function to perform permutations (boot is too slow). 
 #                
 #Input: A - First sample (either matrix or vector)
 #       B - Second sample (dimensions must match A)
@@ -19,37 +19,33 @@
 ################################################################################
 
 
-#Check for packages.  If not installed, install it.
-check<-library("FNN",logical.return=T,quietly=T,verbose=F)
-if(check=="FALSE"){
-  install.packages("FNN")
-  library("FNN")
-}
-library("Hotelling")
-check<-library("Hotelling",logical.return=T,quietly=T,verbose=F)
-if(check=="FALSE"){
-  install.packages("Hotelling")
-  library("Hotelling")
-}
-check<-library("boot",logical.return=T,quietly=T,verbose=F)
-if(check=="FALSE"){
-  install.packages("boot")
-  library("boot")
-}
+# #Check for packages.  If not installed, install it.
+# check<-library("FNN",logical.return=T,quietly=T,verbose=F)
+# if(check=="FALSE"){
+#   install.packages("FNN")
+#   library("FNN")
+# }
+# library("Hotelling")
+# check<-library("Hotelling",logical.return=T,quietly=T,verbose=F)
+# if(check=="FALSE"){
+#   install.packages("Hotelling")
+#   library("Hotelling")
+# }
+# check<-library("boot",logical.return=T,quietly=T,verbose=F)
+# if(check=="FALSE"){
+#   install.packages("boot")
+#   library("boot")
+# }
 
 #basic statistic - could be replaced with ts.test 
-simpleStat <- function(X,Y){
-  statistic<-mean((x-y)^2)
-  return(as.data.frame(statistic))
+simpleStat <- function(z,idx,sizes){
+  z<-z[idx,1]
+  x<-z[1:sizes[1]]
+  y<-z[sizes[1]+1:sizes[2]]
+  #return(mean(colSums((x-y)^2)))
+  return(mean((x-y)^2))
 }
 
-#ks statistic 
-kolSmirStat <- function(z,idx,sizes){
-  z<-as.matrix(z[idx,])
-  x<-z[1:sizes[1],]
-  y<-z[sizes[1]+1:sizes[2],]
-  return(ks.test(x,y,exact=F)$statistic)
-}
 
 #nearest neighbor
 Tn3 <- function(z, ix, sizes) {
@@ -76,33 +72,36 @@ hotel <- function(z,idx,sizes){
 }
 
 #Function to create permutations using boot and call statistic functions above
-permTestBoot <- function(A,B,NUM=999,stat = "simple"){
-  N=c(NROW(A),NROW(B))
-  if(NCOL(A)!=NCOL(B)){stop("Dimensions do not match")}
-  if(NCOL(A)==1){
+permTestSamp <- function(A,B,num=999,stat = "simple"){
+  sizes=c(NROW(A),NROW(B))
+  big<-max(sizes)
+  rowNumbers<-1:sum(sizes)
+  data<-numeric(num+1)
+  if(sizes[1]!=sizes[2]){stop("Dimensions do not match")}
+  if(sizes[1]==1){
     z<-c(A,B)
   }else{
     z <- rbind(A, B)
   }
-  z <- as.data.frame(z)
   
   if(stat == "ks") {
     if(NCOL(A)>1){stop("Too many Dims for ks.test")}
-    boot.obj <- boot(data = z, statistic = kolSmirStat,
-                 sim = "permutation", R = NUM , sizes = N, parallel = "snow",ncpus=6)
+    data[1]<- ks.test(A,B,exact=F)$statistic
+    for(i in 2:num+1){
+      k<-sample(rowNumbers,big,replace=F)
+      data[i]<-ks.test(z[k],z[-k],exact=F)$statistic
+    }
+    
   }else if (stat == "simple"){
     if(NCOL(A)>1){stop("Too many Dims for simple test")}
-    boot.obj <- boot(data = z, statistic = simpleStat,
-                     sim = "permutation", R = NUM, sizes = N, parallel = "snow")
+  
   }else if (stat == "MMD"){
     #call to MMD function goes here
   }else if(stat == "nn"){
-    boot.obj <- boot(data = z, statistic = Tn3,
-                     sim = "permutation", R = NUM, sizes = N, parallel = "snow")
+    
   }else if (stat =="hotel"){
-    boot.obj <- boot(data = z, statistic = hotel,
-                     sim = "permutation", R = NUM, sizes = N, parallel = "snow")
+
   }
-  return(boot.obj)
+  return(data)
 }
 

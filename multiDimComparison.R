@@ -11,7 +11,7 @@
 #################################################################################################################
 #                               !!!   Parameter set up for tests    !!!
 #samples<-c(5,10,15,20,30,40,70,100)
-samples<-15
+samples<-12
 for(p in 1:length(samples) ){
 # m <- 10 
 # n <- 10
@@ -26,7 +26,7 @@ R<-999
 thismany<-20
 
 #amount to increment for tests. Ex.: delta =.1 then test means 0,0.1,0.2,...
-delta<-.3
+delta<-.5
 min_mu<-0
 max_mu<-2
 min_var<-1
@@ -57,7 +57,16 @@ percent_mu_edist<-numeric(length(steps_mu))
 percent_mu_mmd<-numeric(length(steps_mu))
 
 #Std normal - this distribution does not change, it is the base case
-A<-rnorm(n,min_mu,min_var)
+library(MASS)
+
+#dist to use.
+Sigma <- matrix(c(1,0,0,1),2,2) #same covariance matrix
+  # different means
+
+
+#A<-rnorm(n,min_mu,min_var)
+#A <- matrix(rnorm(200,min_mu,1), 40, 5)
+A <- mvrnorm(50,c(0,0),Sigma)  
 
 # Start the clock!
 ptm <- proc.time()
@@ -70,15 +79,8 @@ for(i in 1:length(steps_mu)){
   #The B distribution changes
   
   for(j in 1:thismany){
-    B<-rnorm(m,steps_mu[i],min_var)
-    
-    #Get data for ks stat
-    data<-permTestBR(A,B,R,stat=ks.test,exact=FALSE)
-    mu_p_data_ks[j]<-mean(data>=data[1])
-    
-    #Get data for simple stat
-    data<-permTestBR(A,B,R,stat=simpleStat)
-    mu_p_data_simp[j]<-mean(data>=data[1])
+    #B<-matrix(rnorm(200,steps_mu[i],1),40,5)
+    B <- mvrnorm(50,c(0,steps_mu[i]),Sigma)
     
     #Get data for near neighbor stat
     data<-permTestBR(A,B,R,stat=nNeighbor,k=3)
@@ -93,11 +95,11 @@ for(i in 1:length(steps_mu)){
     mu_p_data_mmd[j]<-mean(data>=data[1])
     
   }
-  percent_mu_ks[i]<-(sum(mu_p_data_ks<=alpha))/(thismany)*100
-  percent_mu_simp[i]<-(sum(mu_p_data_simp<=alpha))/(thismany)*100
+  #percent_mu_ks[i]<-(sum(mu_p_data_ks<=alpha))/(thismany)*100
+  #percent_mu_simp[i]<-(sum(mu_p_data_simp<=alpha))/(thismany)*100
   percent_mu_nn[i]<-(sum(mu_p_data_nn<=alpha))/(thismany)*100
   percent_mu_edist[i]<-(sum(mu_p_data_edist<=alpha))/(thismany)*100
- percent_mu_mmd[i]<-(sum(mu_p_data_mmd<=alpha))/(thismany)*100
+  percent_mu_mmd[i]<-(sum(mu_p_data_mmd<=alpha))/(thismany)*100
   
   
 }
@@ -106,8 +108,8 @@ for(i in 1:length(steps_mu)){
 #example of what ouput will look like
 df<-data.frame(steps_mu,percent_mu_ks,percent_mu_simp,percent_mu_nn, percent_mu_mmd)
 g=ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
-   geom_line(aes(y = percent_mu_ks, col = "percent_mu_ks")) + 
-   geom_line(aes(y = percent_mu_simp, col = "percent_mu_simp")) +
+   #geom_line(aes(y = percent_mu_ks, col = "percent_mu_ks")) + 
+   #geom_line(aes(y = percent_mu_simp, col = "percent_mu_simp")) +
    geom_line(aes(y = percent_mu_nn, col = "percent_mu_nn")) +
    geom_line(aes( y = percent_mu_edist,col = "percent_mu_edist")) +
    geom_line(aes( y = percent_mu_mmd,col = "percent_mu_mmd")) +
