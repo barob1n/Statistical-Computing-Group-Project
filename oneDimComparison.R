@@ -23,17 +23,29 @@ for(p in 1:length(samples) ){
 # n <- 10
   m<-samples[p]
   n<-samples[p]
+<<<<<<< HEAD
 
 
 #simpleStat(c(X,Y),1,c(m,n))
 
+=======
+source('statsBR.R')
+source('mmdStats.R')
+
+#simpleStat(c(X,Y),1,c(m,n))
+
+>>>>>>> myMacBranch
 R<-999
 
 #simpleStat(c(X,Y),1,c(m,n))
 
 #perform this many iterations per delta increment. Used to compute percent pass/fail
 #Example: thismany<-100, say 50 correctly identify different distributions, then 50/100 = 50 percent pass
+<<<<<<< HEAD
 thismany<-20
+=======
+thismany<-3
+>>>>>>> myMacBranch
 
 #amount to increment for tests. Ex.: delta =.1 then test means 0,0.1,0.2,...
 delta<-.1
@@ -103,8 +115,15 @@ for(i in 1:length(steps_mu)){
     #mu_p_data_mmd[j]<-mean(data>=data[1])
     
     #Get decision for uMMD
+<<<<<<< HEAD
     mu_p_data_uMMD[j] <- uMMDDecision(A,B,samples,R)
     
+=======
+    #mu_p_data_uMMD[j] <- uMMDDecision(A,B,samples,R)
+    #Print results from uMMDDecision
+    mu_p_data_mmd[j] <- uMMDDecision(A,B,m,R)
+
+>>>>>>> myMacBranch
   }
   percent_mu_ks[i]<-(sum(mu_p_data_ks<=alpha))/(thismany)*100
   percent_mu_simp[i]<-(sum(mu_p_data_simp<=alpha))/(thismany)*100
@@ -118,7 +137,11 @@ for(i in 1:length(steps_mu)){
 
 #example of what ouput will look like
 df<-data.frame(steps_mu,percent_mu_ks,percent_mu_simp,percent_mu_nn, percent_mu_mmd)
+<<<<<<< HEAD
  ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
+=======
+g <- ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
+>>>>>>> myMacBranch
    geom_line(aes(y = percent_mu_ks, col = "percent_mu_ks")) + 
    geom_line(aes(y = percent_mu_simp, col = "percent_mu_simp")) +
    geom_line(aes(y = percent_mu_nn, col = "percent_mu_nn")) +
@@ -126,6 +149,10 @@ df<-data.frame(steps_mu,percent_mu_ks,percent_mu_simp,percent_mu_nn, percent_mu_
    geom_line(aes( y = percent_mu_mmd,col = "percent_mu_mmd")) +
    ggtitle("50 variables")
 
+<<<<<<< HEAD
+=======
+print(g)
+>>>>>>> myMacBranch
 # Stop the clock
 proc.time() - ptm
 
