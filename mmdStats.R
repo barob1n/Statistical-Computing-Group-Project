@@ -3,7 +3,7 @@
 # input: the two samples X and Y along with m the number of points in each sample (assumed to be equal)
 
 #    Unbiased Quadratic Time Esimator:
-# uMMDDecision does the tests for given number of boot comparisons R
+# uMMDDecision(X,Y,m,R) does the tests for given number of boot comparisons R
 # uMMD(X,Y,m) will give you the statistic for the original sample without giving you a value to compare it to
 # uMMDP gives you the statistic given the kernel matrix 
 
@@ -85,7 +85,7 @@ uMMDDecision <- function(X,Y,m,R){
   if(p > .95){
     print("Rejected")
   }
-
+  pval <- p
 }
 
 
