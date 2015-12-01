@@ -1,10 +1,6 @@
 #comparison of tests
-  #1D
-<<<<<<< Updated upstream
-source('permTestBoot.R')
-=======
+#multi dim
 
->>>>>>> Stashed changes
 
 #sample amount
 m <- 50
@@ -15,13 +11,7 @@ X <- rnorm(m, 0, 1)
 Y <- rnorm(n, 1, 1)
 
 #run data through tests
-  #general tests
-
-<<<<<<< Updated upstream
-simpleStat(c(X,Y),1,c(m,n))
-=======
->>>>>>> Stashed changes
-
+#general tests
 #graph type 1 and type 2 errors
 #graph speed comparison
 #graph acceptance rate
