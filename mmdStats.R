@@ -3,7 +3,7 @@
 # input: the two samples X and Y along with m the number of points in each sample (assumed to be equal)
 
 #    Unbiased Quadratic Time Esimator:
-# uMMDDecision does the tests for given number of boot comparisons R
+# uMMDDecision(X,Y,m,R) does the tests for given number of boot comparisons R
 # uMMD(X,Y,m) will give you the statistic for the original sample without giving you a value to compare it to
 # uMMDP gives you the statistic given the kernel matrix 
 
@@ -11,6 +11,7 @@
 # lMMD(X,Y,m) will give you the statistic
 # lMMDDecision  Not a very fast method (just coded in the stuff for other statistics) 
 
+##Modified for one dim, need to make small changes (marked ###)for multivar
 
 #compute the radial basis function kernel for two vecs
 rbfk <- function(a,b, sigma = 1){
@@ -20,18 +21,21 @@ rbfk <- function(a,b, sigma = 1){
 }
 
 #given the two samples X and Y, define the matrix P of the kernel on pairs
-kernelMatrix <- function(X,Y, m){
-  Z <- rbind(X,Y) #combine the rows of X and Y data points
+
+kernelMatrix <- function(X,Y,m){
+  Z <- c(X,Y) #combine the rows of X and Y data points  ###use rbind for multi
   P <- matrix(0,2*m,2*m)
   
   for(i in 1:(2*m)){
     for(j in 1:(2*m)){
-      P[i,j] <- rbfk(Z[i,],Z[j,])
+
+      P[i,j] <- rbfk(Z[i],Z[j])    ### add commas fors multi
     }
   }
   
   P <- P - diag(P)*diag(2*m) #make the diagonal elements 0
   result <- P
+
 }
 
 
@@ -45,11 +49,11 @@ uMMD <- function(X,Y,m){
 }
 
 uMMDP <- function(P,m){
-    xBlock <- P[1:m,1:m]
-    yBlock <- P[(m+1):(2*m),(m+1):(2*m)]
-    crossBlock <- P[1:m,(m+1):(2*m)]
-    
-    result <- (sum(xBlock)+sum(yBlock))/(m^2-m) - 2*sum(crossBlock)/(m^2)
+  xBlock <- P[1:m,1:m]
+  yBlock <- P[(m+1):(2*m),(m+1):(2*m)]
+  crossBlock <- P[1:m,(m+1):(2*m)]
+  
+  result <- (sum(xBlock)+sum(yBlock))/(m^2-m) - 2*sum(crossBlock)/(m^2)
 }
 
 #Now we shuffle the matrix to get bootstrap baseline for the value then decide acceptance
@@ -71,21 +75,23 @@ uMMDDecision <- function(X,Y,m,R){
   Q <- Q[k,] #permute the rows in the same way to maintain symmetry
   
   S[i] = uMMDP(Q,m)
-}
-  
+  }
+
   p <- mean(c(SO,S) >= SO)
   options(warn = 0)
   
   print(p)
-  
-  if(p < .05){
-    print("Rejected")
-  }
 
-  if(p > .95){
-    print("Rejected")
-  }
-
+  pval <- p
+#   print(p)
+#   
+#   if(p < .05){
+#     print("Rejected")
+#   }
+#   
+#   if(p > .95){
+#     print("Rejected")
+#   }
 }
 
 
@@ -160,3 +166,4 @@ lMMDDecision <- function(X,Y,m,R){
 # alright <- lMMDDecision(A,B,m,99)
 
 
+# alright <- lMMDDecision(A,B,m,99)
