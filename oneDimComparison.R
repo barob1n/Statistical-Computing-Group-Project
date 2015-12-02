@@ -1,3 +1,9 @@
+#comparison of tests
+  #1D
+source('permTestBoot.R')
+source('mmdStats.R')
+source('permTestBR.R')
+
 #################################################################################################################
 #Description: 
 #Compares two distributions, A and B, by leaving A alone and incrementing either the mean OR variance
@@ -17,13 +23,26 @@ for(p in 1:length(samples) ){
 # n <- 10
   m<-samples[p]
   n<-samples[p]
+<<<<<<< HEAD
 
 
+#simpleStat(c(X,Y),1,c(m,n))
+
+=======
+source('statsBR.R')
+source('mmdStats.R')
+
+#simpleStat(c(X,Y),1,c(m,n))
+
+>>>>>>> myMacBranch
 R<-999
+
+#simpleStat(c(X,Y),1,c(m,n))
 
 #perform this many iterations per delta increment. Used to compute percent pass/fail
 #Example: thismany<-100, say 50 correctly identify different distributions, then 50/100 = 50 percent pass
 thismany<-20
+
 
 #amount to increment for tests. Ex.: delta =.1 then test means 0,0.1,0.2,...
 delta<-.3
@@ -92,12 +111,20 @@ for(i in 1:length(steps_mu)){
     data<-permTestBR(A,B,R,stat=kernelStat)
     mu_p_data_mmd[j]<-mean(data>=data[1])
     
+   
+    #Print results from uMMDDecision
+    mu_p_data_mmd[j] <- uMMDDecision(A,B,m,R)
+
   }
   percent_mu_ks[i]<-(sum(mu_p_data_ks<=alpha))/(thismany)*100
   percent_mu_simp[i]<-(sum(mu_p_data_simp<=alpha))/(thismany)*100
   percent_mu_nn[i]<-(sum(mu_p_data_nn<=alpha))/(thismany)*100
   percent_mu_edist[i]<-(sum(mu_p_data_edist<=alpha))/(thismany)*100
+<<<<<<< HEAD
  percent_mu_mmd[i]<-(sum(mu_p_data_mmd<=alpha))/(thismany)*100
+=======
+  percent_mu_mmd[i]<-(sum(mu_p_data_mmd<=alpha))/(thismany)*100
+>>>>>>> refs/remotes/Spstolar/myMacBranch
   
   
 }
@@ -105,7 +132,12 @@ for(i in 1:length(steps_mu)){
 
 #example of what ouput will look like
 df<-data.frame(steps_mu,percent_mu_ks,percent_mu_simp,percent_mu_nn, percent_mu_mmd)
+<<<<<<< HEAD
 g=ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
+=======
+
+g <- ggplot(data=df,aes(steps_mu,y=value,color=variable)) + 
+>>>>>>> refs/remotes/Spstolar/myMacBranch
    geom_line(aes(y = percent_mu_ks, col = "percent_mu_ks")) + 
    geom_line(aes(y = percent_mu_simp, col = "percent_mu_simp")) +
    geom_line(aes(y = percent_mu_nn, col = "percent_mu_nn")) +
@@ -114,6 +146,7 @@ g=ggplot(data=df,aes(steps_mu,y=value,color=variable)) +
    ggtitle("50 variables")
 plot(g)
 
+print(g)
 # Stop the clock
 proc.time() - ptm
 
